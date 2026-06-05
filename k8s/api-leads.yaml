@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-leads-deployment
+  labels:
+    app: api-leads
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-leads
+  template:
+    metadata:
+      labels:
+        app: api-leads
+    spec:
+      containers:
+      - name: api-leads
+        image: lead-feedback/api-leads:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: ENV
+          value: "k8s-local"
+        - name: REDIS_HOST
+          value: "redis-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-leads-service
+spec:
+  selector:
+    app: api-leads
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: ClusterIP
