@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-feedback-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: worker-feedback
+  template:
+    metadata:
+      labels:
+        app: worker-feedback
+    spec:
+      containers:
+      - name: worker
+        # Usaremos a mesma imagem da API para simplificar o build,
+        # mas mudaremos o comando de execução no final
+        image: lead-feedback/api-leads:v1
+        imagePullPolicy: Never
+        command: ["python", "worker.py"] 
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
